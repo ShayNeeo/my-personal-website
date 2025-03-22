@@ -1,0 +1,119 @@
+const form = document.getElementById("messageArea");
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const date = new Date();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const str_time = hour + ":" + minute;
+
+    const userQuestion = document.getElementById('text');
+    let question = userQuestion.value;
+
+    const messageFormeight = document.getElementById("messageFormeight");
+
+    const userHtml = document.createElement('div');
+
+    userHtml.innerHTML = 
+        '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' +
+        question +
+        '<span class="msg_time_send">' +
+        str_time +
+        '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg"></div></div>';
+
+    messageFormeight.appendChild(userHtml);
+    scrollToBottom();
+
+    GrokChatBot(question, str_time);
+
+    userQuestion.value = "";
+})
+
+function GrokChatBot(question, str_time) {
+    const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + 'xai-Ovqi0hyks7Oei1W3CRZP7ex4g7you6zvBFLqvFrdxORKBqjkzlHcSmpqJxl51bD54Uslk9X2CplLqT3l'
+        },
+        body: JSON.stringify({
+			"messages": [
+			  {
+				"role": "system",
+				"content": "You are Grok, a chatbot specialized in Economics and Artificial Intelligence. You are also advanced in Academic Research"
+			  },
+			  {
+				"role": "user",
+				"content": question
+			  }
+			],
+			"model": "grok-beta",
+			"stream": true,
+			"temperature": 0
+		  })
+      };
+    
+    fetch('https://api.x.ai/v1/chat/completions', options)
+    .then(response => {
+        if (!response.ok || !response.body) {
+            throw new Error('API failed' + response.status + response.text());
+        }
+        return response.body;
+    })
+    .then(res => {
+        readStream(res, str_time);
+    })
+    .catch(err => console.log(err));
+}
+
+async function readStream(stream, str_time) {
+    let message = '';
+    const botHtml = document.createElement('div');
+
+    const reader = stream.getReader();
+    let done = false;
+    let appended = false;
+
+    while (!done) {
+        const {value, done: isDone} = await reader.read();
+        if (isDone) break;
+
+        // Process the chunk of data (value)
+        let str = new TextDecoder().decode(value);
+        let arr = str.split("\n\n");
+
+        arr.forEach(ele => {
+            if (ele.includes("content")) {
+                let data = ele.split("data: ");
+                data.forEach(res => {
+                    if (res.includes("content")) {
+                        res = JSON.parse(res);
+
+                        let content = res.choices[0].delta.content.replace(/\n/g, "<br>");
+
+                        message += content;
+                    }
+                })
+            }
+        })
+        botHtml.innerHTML = 
+            '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' +
+            message +
+            '<span class="msg_time">' +
+            str_time +
+            "</span></div></div>";
+
+        scrollToBottom();
+
+        if (!appended && message) {
+            messageFormeight.appendChild(botHtml);
+            appended = true;
+        }
+    }
+}
+
+function scrollToBottom() {
+    var messageBody = document.getElementById("messageFormeight");
+    messageBody.scrollTop = messageBody.scrollHeight;
+  }
