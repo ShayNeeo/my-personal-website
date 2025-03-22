@@ -47,7 +47,7 @@ function CerebrasChatBot(question, str_time) {
                     "content": question
                 }
             ],
-            "model": "llama-3.3-70b", // Using the model from your Cerebras example
+            "model": "llama3.1-8b", // Using the model from your Cerebras example
             "stream": true,         // Assuming Cerebras supports streaming
             "temperature": 0
         })
@@ -70,16 +70,16 @@ function CerebrasChatBot(question, str_time) {
 async function readStream(stream, str_time) {
     let message = '';
     const botHtml = document.createElement('div');
-
     const reader = stream.getReader();
     let done = false;
-    let appended = false;
 
     while (!done) {
         const { value, done: isDone } = await reader.read();
-        if (isDone) break;
+        if (isDone) {
+            done = true;
+            break;
+        }
 
-        // Process the chunk of data (value)
         let str = new TextDecoder().decode(value);
         let arr = str.split("\n\n");
 
@@ -99,23 +99,27 @@ async function readStream(stream, str_time) {
                 });
             }
         });
-
-        botHtml.innerHTML = 
-            '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' +
-            message +
-            '<span class="msg_time">' +
-            str_time +
-            "</span></div></div>";
-
-        scrollToBottom();
-
-        if (!appended && message) {
-            messageFormeight.appendChild(botHtml);
-            appended = true;
-        }
     }
+
+    // Apply bold formatting to **text**
+    message = formatTextWithBold(message);
+
+    botHtml.innerHTML = 
+        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' +
+        message +
+        '<span class="msg_time">' +
+        str_time +
+        "</span></div></div>";
+
+    messageFormeight.appendChild(botHtml);
+    scrollToBottom();
 }
 
+function formatTextWithBold(text) {
+    const boldRegex = /\*\*(.*?)\*\*/g;
+    text = text.replace(boldRegex, '<b>$1</b>');
+    return text;
+}
 function scrollToBottom() {
     var messageBody = document.getElementById("messageFormeight");
     messageBody.scrollTop = messageBody.scrollHeight;
