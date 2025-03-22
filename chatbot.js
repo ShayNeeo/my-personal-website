@@ -14,7 +14,6 @@ form.addEventListener('submit', function(event) {
     const messageFormeight = document.getElementById("messageFormeight");
 
     const userHtml = document.createElement('div');
-
     userHtml.innerHTML = 
         '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' +
         question +
@@ -25,39 +24,40 @@ form.addEventListener('submit', function(event) {
     messageFormeight.appendChild(userHtml);
     scrollToBottom();
 
-    GrokChatBot(question, str_time);
+    CerebrasChatBot(question, str_time);
 
     userQuestion.value = "";
-})
+});
 
-function GrokChatBot(question, str_time) {
+function CerebrasChatBot(question, str_time) {
     const options = {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + 'xai-Ovqi0hyks7Oei1W3CRZP7ex4g7you6zvBFLqvFrdxORKBqjkzlHcSmpqJxl51bD54Uslk9X2CplLqT3l'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer csk-6pndjhhtvyv4ek88xm3rtfptpcw9m5nmw89twdk9tctwvpn4' // Replace with your Cerebras API key
         },
         body: JSON.stringify({
-			"messages": [
-			  {
-				"role": "system",
-				"content": "You are Grok, a chatbot specialized in Economics and Artificial Intelligence. You are also advanced in Academic Research"
-			  },
-			  {
-				"role": "user",
-				"content": question
-			  }
-			],
-			"model": "grok-beta",
-			"stream": true,
-			"temperature": 0
-		  })
-      };
-    
-    fetch('https://api.x.ai/v1/chat/completions', options)
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a chatbot specialized in Economics and Artificial Intelligence. You are also advanced in Academic Research"
+                },
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ],
+            "model": "llama-3.3-70b", // Using the model from your Cerebras example
+            "stream": true,         // Assuming Cerebras supports streaming
+            "temperature": 0
+        })
+    };
+
+    // Replace with the actual Cerebras API endpoint (仮 endpoint based on typical REST API structure)
+    fetch('https://api.cerebras.ai/v1/chat/completions', options) // Update this URL if Cerebras provides a different one
     .then(response => {
         if (!response.ok || !response.body) {
-            throw new Error('API failed' + response.status + response.text());
+            throw new Error('API failed: ' + response.status + ' ' + response.statusText);
         }
         return response.body;
     })
@@ -76,7 +76,7 @@ async function readStream(stream, str_time) {
     let appended = false;
 
     while (!done) {
-        const {value, done: isDone} = await reader.read();
+        const { value, done: isDone } = await reader.read();
         if (isDone) break;
 
         // Process the chunk of data (value)
@@ -88,15 +88,18 @@ async function readStream(stream, str_time) {
                 let data = ele.split("data: ");
                 data.forEach(res => {
                     if (res.includes("content")) {
-                        res = JSON.parse(res);
-
-                        let content = res.choices[0].delta.content.replace(/\n/g, "<br>");
-
-                        message += content;
+                        try {
+                            res = JSON.parse(res);
+                            let content = res.choices[0].delta.content.replace(/\n/g, "<br>");
+                            message += content;
+                        } catch (e) {
+                            console.log("Error parsing chunk:", e);
+                        }
                     }
-                })
+                });
             }
-        })
+        });
+
         botHtml.innerHTML = 
             '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' +
             message +
@@ -116,4 +119,4 @@ async function readStream(stream, str_time) {
 function scrollToBottom() {
     var messageBody = document.getElementById("messageFormeight");
     messageBody.scrollTop = messageBody.scrollHeight;
-  }
+}
