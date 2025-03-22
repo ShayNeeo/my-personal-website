@@ -4,12 +4,14 @@ form.addEventListener('submit', function(event) {
     event.preventDefault();
 
     const date = new Date();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const str_time = hour + ":" + minute;
+    const hour = date.getHours().toString().padStart(2, '0'); // Ensure 2 digits
+    const minute = date.getMinutes().toString().padStart(2, '0'); // Ensure 2 digits
+    const str_time = `${hour}:${minute}`;
 
     const userQuestion = document.getElementById('text');
-    let question = userQuestion.value;
+    let question = userQuestion.value.trim(); // Trim whitespace
+
+    if (!question) return; // Prevent empty submissions
 
     const messageFormeight = document.getElementById("messageFormeight");
 
@@ -19,7 +21,7 @@ form.addEventListener('submit', function(event) {
         question +
         '<span class="msg_time_send">' +
         str_time +
-        '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg"></div></div>';
+        '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg" alt="User Avatar"></div></div>';
 
     messageFormeight.appendChild(userHtml);
     scrollToBottom();
@@ -34,7 +36,7 @@ function CerebrasChatBot(question, str_time) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer csk-6pndjhhtvyv4ek88xm3rtfptpcw9m5nmw89twdk9tctwvpn4' // Replace with your Cerebras API key
+            'Authorization': 'Bearer csk-6pndjhhtvyv4ek88xm3rtfptpcw9m5nmw89twdk9tctwvpn4'
         },
         body: JSON.stringify({
             "messages": [
@@ -47,24 +49,21 @@ function CerebrasChatBot(question, str_time) {
                     "content": question
                 }
             ],
-            "model": "llama3.1-8b", // Using the model from your Cerebras example
-            "stream": true,         // Assuming Cerebras supports streaming
+            "model": "llama3.1-8b",
+            "stream": true,
             "temperature": 0
         })
     };
 
-    // Replace with the actual Cerebras API endpoint (仮 endpoint based on typical REST API structure)
-    fetch('https://api.cerebras.ai/v1/chat/completions', options) // Update this URL if Cerebras provides a different one
+    fetch('https://api.cerebras.ai/v1/chat/completions', options)
     .then(response => {
         if (!response.ok || !response.body) {
             throw new Error('API failed: ' + response.status + ' ' + response.statusText);
         }
         return response.body;
     })
-    .then(res => {
-        readStream(res, str_time);
-    })
-    .catch(err => console.log(err));
+    .then(res => readStream(res, str_time))
+    .catch(err => console.error('Chatbot Error:', err));
 }
 
 async function readStream(stream, str_time) {
@@ -93,7 +92,7 @@ async function readStream(stream, str_time) {
                             let content = res.choices[0].delta.content.replace(/\n/g, "<br>");
                             message += content;
                         } catch (e) {
-                            console.log("Error parsing chunk:", e);
+                            console.error("Error parsing chunk:", e);
                         }
                     }
                 });
@@ -101,26 +100,25 @@ async function readStream(stream, str_time) {
         });
     }
 
-    // Apply bold formatting to **text**
     message = formatTextWithBold(message);
 
     botHtml.innerHTML = 
-        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' +
+        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg" alt="Bot Avatar"></div><div class="msg_cotainer">' +
         message +
         '<span class="msg_time">' +
         str_time +
-        "</span></div></div>";
+        '</span></div></div>';
 
-    messageFormeight.appendChild(botHtml);
+    document.getElementById("messageFormeight").appendChild(botHtml);
     scrollToBottom();
 }
 
 function formatTextWithBold(text) {
     const boldRegex = /\*\*(.*?)\*\*/g;
-    text = text.replace(boldRegex, '<b>$1</b>');
-    return text;
+    return text.replace(boldRegex, '<b>$1</b>');
 }
+
 function scrollToBottom() {
-    var messageBody = document.getElementById("messageFormeight");
+    const messageBody = document.getElementById("messageFormeight");
     messageBody.scrollTop = messageBody.scrollHeight;
 }
