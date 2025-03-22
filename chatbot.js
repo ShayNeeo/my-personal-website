@@ -21,7 +21,7 @@ form.addEventListener('submit', function(event) {
         question +
         '<span class="msg_time_send">' +
         str_time +
-        '</span></div><div class="img_cont_msg"><img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg" alt="User Avatar"></div></div>';
+        '</span></div><div class="img_cont_msg"><img src="user.png" class="rounded-circle user_img_msg" alt="User Avatar"></div></div>';
 
     messageFormeight.appendChild(userHtml);
     scrollToBottom();
@@ -49,10 +49,10 @@ function CerebrasChatBot(question, str_time) {
                     "content": question
                 }
             ],
-            "model": "llama-3.3-70b",
+            "model": "llama3.1-8b",
             "stream": true,
             "temperature": 0.2,
-            "top_p": 0.1
+            "top_p": 0.1,
         })
     };
 
@@ -104,7 +104,7 @@ async function readStream(stream, str_time) {
     message = formatTextWithBold(message);
 
     botHtml.innerHTML = 
-        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://i.ibb.co/fSNP7Rz/icons8-chatgpt-512.png" class="rounded-circle user_img_msg" alt="Bot Avatar"></div><div class="msg_cotainer">' +
+        '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="logo.png" class="rounded-circle user_img_msg" alt="Bot Avatar"></div><div class="msg_cotainer">' +
         message +
         '<span class="msg_time">' +
         str_time +
