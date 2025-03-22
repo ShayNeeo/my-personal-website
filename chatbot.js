@@ -49,9 +49,9 @@ function CerebrasChatBot(question, str_time) {
                     "content": question
                 }
             ],
-            "model": "llama3.1-8b",
+            "model": "llama-3.3-70b",
             "stream": true,
-            "temperature": 0
+            "temperature": 0.3
         })
     };
 
