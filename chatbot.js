@@ -123,4 +123,4 @@ function scrollToBottom() {
     const messageBody = document.getElementById("messageFormeight");
     messageBody.scrollTop = messageBody.scrollHeight;
 }
-//Activate MS Dev Program, please Microsoft, please renew the subcription, why not Microsoft:abababaa//
+//Activate MS Dev Program, please Microsoft, please renew the subcription, why not Microsoft:ababababa//
