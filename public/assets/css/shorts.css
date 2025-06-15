@@ -1,0 +1,103 @@
+/* URL Shortener specific styles */
+
+.shorts-container,
+.shorts-admin-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.shorts-container h1,
+.shorts-admin-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.admin-link {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.links-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.links-table th,
+.links-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.links-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.links-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.links-table tr:hover {
+    background-color: #f0f0f0;
+}
+
+.delete-btn {
+    background-color: #c62828;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #b71c1c;
+}
+
+.error-container {
+    max-width: 600px;
+    margin: 50px auto;
+    text-align: center;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+    .links-table thead {
+        display: none;
+    }
+    
+    .links-table, .links-table tbody, .links-table tr, .links-table td {
+        display: block;
+        width: 100%;
+    }
+    
+    .links-table tr {
+        margin-bottom: 15px;
+    }
+    
+    .links-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    
+    .links-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 15px;
+        font-weight: bold;
+        text-align: left;
+    }
+}

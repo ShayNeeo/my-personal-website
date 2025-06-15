@@ -1,0 +1,24 @@
+upload file pdf, link
+tài khoản,....
+
+
+generate json back to image when using searchxng
+
+
+https://www.anthropic.com/engineering/building-effective-agents:
+orchestration workers --> chia task ra nhiều phần nhỏ (nếu câu hỏi quá lớn phần nhỏ đc rút gọn -> tiếp tục đc dùng trong memory để làm phần kế tiếp của câu hỏi)
+augemented (rag)
+Parallelisation (chia nhỏ - chạy cùng lúc)
+evaluated-optimizer (in the end of the answer)
+
+fix create prompt 
+
+Add mistral
+Add Groq
+add cohere API
+add fireworks API
+add together
+Googel AI Studio (last option)
+
+
+Personal website = CV
